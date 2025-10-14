@@ -1,11 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Welcome() {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Ad Meliora: Movie World</h1>
       <p style={styles.subtitle}>Your Gateway to Endless Entertainment</p>
 
       <div style={styles.buttonContainer}>
-        <button style={styles.googleButton}>Sign in with Google</button>
+        <button onClick={() => navigate("/home")} style={styles.googleButton}>
+          Sign in with Google
+        </button>
         <button style={styles.appleButton}>Sign in with Apple</button>
       </div>
 
