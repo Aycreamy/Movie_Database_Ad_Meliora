@@ -1,7 +1,27 @@
 import { useNavigate } from "react-router-dom";
+import { signInWithGoogle, auth } from "../firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect } from "react";
 
 export default function Welcome() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-redirect if already signed in
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) navigate("/home");
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      navigate("/home");
+    } catch (err) {
+      console.error("Google Sign-in failed:", err);
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -9,17 +29,15 @@ export default function Welcome() {
       <p style={styles.subtitle}>Your Gateway to Endless Entertainment</p>
 
       <div style={styles.buttonContainer}>
-        <button onClick={() => navigate("/home")} style={styles.googleButton}>
+        <button onClick={handleGoogleSignIn} style={styles.googleButton}>
           Sign in with Google
         </button>
-        <button style={styles.appleButton}>Sign in with Apple</button>
       </div>
-
-      <p style={styles.footer}>Welcome Back.</p>
     </div>
   );
 }
 
+// 🎨 Updated styles
 const styles = {
   container: {
     display: "flex",
@@ -33,14 +51,17 @@ const styles = {
     padding: "0 20px",
   },
   title: {
-    fontSize: "26px",
+    fontSize: "28px",
     fontWeight: "bold",
     marginBottom: "8px",
   },
   subtitle: {
-    fontSize: "14px",
-    color: "#bbb",
-    marginBottom: "30px",
+    fontSize: "16px",
+    fontFamily: "'Poppins', sans-serif",
+    fontStyle: "italic",
+    letterSpacing: "0.5px",
+    color: "#dcdcdc",
+    marginBottom: "35px",
   },
   buttonContainer: {
     display: "flex",
@@ -56,19 +77,6 @@ const styles = {
     color: "white",
     fontSize: "14px",
     cursor: "pointer",
-  },
-  appleButton: {
-    backgroundColor: "#000",
-    border: "none",
-    borderRadius: "6px",
-    padding: "10px",
-    color: "white",
-    fontSize: "14px",
-    cursor: "pointer",
-  },
-  footer: {
-    marginTop: "40px",
-    fontSize: "12px",
-    color: "#888",
+    transition: "background 0.3s ease",
   },
 };
